@@ -104,4 +104,5 @@ QUICK_START.md
 specs/
 *.prompt.md
 .speckit/
+.specify/
 speckit-*.json
