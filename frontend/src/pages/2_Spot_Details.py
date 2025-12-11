@@ -77,6 +77,18 @@ try:
     
     st.divider()
     
+    # Directions section
+    from src.components.map_directions import display_directions_card
+    display_directions_card(
+        spot_id=spot_id,
+        spot_name=spot['nome'],
+        latitude=spot['latitude'],
+        longitude=spot['longitude'],
+        api_client=api.client,
+    )
+    
+    st.divider()
+    
     # Accommodations section
     st.subheader("🏨 Hospedagens Próximas")
     

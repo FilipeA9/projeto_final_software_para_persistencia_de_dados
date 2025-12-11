@@ -126,7 +126,7 @@ turistando/
 
 ### Prerequisites
 
-- **Python 3.11+** (tested com Python 3.13)
+- **Python 3.11+** (tested com Python 3.12)
 - **Docker Desktop** (para PostgreSQL, MongoDB, Redis)
 - **PowerShell** (para Windows)
 

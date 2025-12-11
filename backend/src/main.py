@@ -12,6 +12,18 @@ from src.config.settings import settings
 from src.config.postgres import init_db, close_db
 from src.config.mongodb import init_mongo, close_mongo
 from src.config.redis import init_redis, close_redis
+from src.middleware.error_handler import setup_error_handlers
+from src.middleware.rate_limit import rate_limit_middleware
+from src.utils.logging_config import setup_logging
+import logging
+
+# Setup logging
+setup_logging(
+    log_level=getattr(settings, "LOG_LEVEL", "INFO"),
+    log_to_file=True,
+    log_to_console=True,
+)
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
@@ -22,35 +34,35 @@ async def lifespan(app: FastAPI):
     Initializes database connections on startup and closes them on shutdown.
     """
     # Startup
-    print("🚀 Starting Tourism Platform API...")
+    logger.info("🚀 Starting Tourism Platform API...")
     try:
         await init_db()
-        print("✅ PostgreSQL initialized")
+        logger.info("✅ PostgreSQL initialized")
     except Exception as e:
-        print(f"⚠️  PostgreSQL initialization failed: {e}")
+        logger.error(f"⚠️  PostgreSQL initialization failed: {e}")
     
     try:
         await init_mongo()
-        print("✅ MongoDB initialized")
+        logger.info("✅ MongoDB initialized")
     except Exception as e:
-        print(f"⚠️  MongoDB initialization failed: {e}")
+        logger.error(f"⚠️  MongoDB initialization failed: {e}")
     
     try:
         await init_redis()
-        print("✅ Redis initialized")
+        logger.info("✅ Redis initialized")
     except Exception as e:
-        print(f"⚠️  Redis initialization failed: {e}")
+        logger.error(f"⚠️  Redis initialization failed: {e}")
     
-    print("✅ All services initialized successfully!")
+    logger.info("✅ All services initialized successfully!")
     
     yield
     
     # Shutdown
-    print("🛑 Shutting down Tourism Platform API...")
+    logger.info("🛑 Shutting down Tourism Platform API...")
     await close_db()
     await close_mongo()
     await close_redis()
-    print("✅ All connections closed")
+    logger.info("✅ All connections closed")
 
 
 # Create FastAPI application
@@ -72,6 +84,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Rate limiting middleware
+app.middleware("http")(rate_limit_middleware)
+
+# Setup error handlers
+setup_error_handlers(app)
 
 
 @app.get("/")
@@ -95,8 +113,9 @@ async def health_check():
 
 
 # Register API routers
-from src.api import spots, photos, ratings, auth, comments, accommodations, favorites
+from src.api import spots, photos, ratings, auth, comments, accommodations, favorites, health
 
+app.include_router(health.router, tags=["health"])
 app.include_router(auth.router, prefix=settings.API_V1_PREFIX, tags=["auth"])
 app.include_router(spots.router, prefix=settings.API_V1_PREFIX, tags=["spots"])
 app.include_router(photos.router, prefix=settings.API_V1_PREFIX, tags=["photos"])

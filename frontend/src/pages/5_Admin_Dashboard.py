@@ -35,12 +35,13 @@ st.title("🔧 Admin Dashboard")
 st.caption(f"Welcome, {st.session_state.get('username', 'Admin')}")
 
 # Tabs for different admin functions
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 Statistics",
     "🗺️ Manage Spots",
     "➕ Create New Spot",
     "📸 Manage Photos",
-    "🏨 Accommodations"
+    "🏨 Accommodations",
+    "📦 Import/Export"
 ])
 
 # Tab 1: Statistics
@@ -214,6 +215,60 @@ with tab5:
     
     except Exception as e:
         st.error(f"❌ Error loading spots: {e}")
+
+# Tab 6: Import/Export
+with tab6:
+    st.header("📦 Data Import/Export")
+    st.caption("Backup and restore tourist spot data")
+    
+    # Export section
+    st.subheader("📥 Export Data")
+    from components.export_button import render_export_button
+    render_export_button(api.client)
+    
+    st.divider()
+    
+    # Import section
+    st.subheader("📤 Import Data")
+    from components.import_form import render_import_form, render_import_examples
+    
+    # Show examples first
+    render_import_examples()
+    
+    st.divider()
+    
+    # Import form
+    render_import_form(api.client)
+    
+    st.divider()
+    
+    # Information
+    with st.expander("ℹ️ About Import/Export", expanded=False):
+        st.markdown("""
+        ### Export Features
+        - Export all tourist spots to **JSON** or **CSV** format
+        - Apply filters (city, state, country) to export specific data
+        - Include metadata (export timestamp, record count)
+        - Download directly to your computer
+        
+        ### Import Features
+        - Import tourist spots from **JSON** or **CSV** files
+        - Automatic validation of required fields
+        - Error reporting for invalid records
+        - Detailed summary of import results
+        
+        ### Use Cases
+        - **Backup**: Export data regularly for backup purposes
+        - **Migration**: Export from one environment, import to another
+        - **Bulk Creation**: Create many spots using CSV/JSON files
+        - **Data Analysis**: Export to CSV for analysis in Excel/Python
+        
+        ### Important Notes
+        - ⚠️ Imported spots will be created with your user as the creator
+        - ⚠️ Duplicate spots may be created if you import existing data
+        - ⚠️ Invalid records will be skipped with error messages
+        - ✅ All operations are logged for audit purposes
+        """)
 
 # Sidebar info
 with st.sidebar:
