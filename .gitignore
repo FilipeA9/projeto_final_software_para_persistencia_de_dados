@@ -1,0 +1,107 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+*.cover
+.hypothesis/
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+uploads/
+!uploads/.gitkeep
+
+# Alembic
+alembic/versions/*.pyc
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Ruff
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker
+.dockerignore
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Documentation and specs (only README.md goes to repo)
+PHASE*.md
+IMPLEMENTATION_STATUS.md
+QUICK_START.md
+specs/
+*.prompt.md
+.speckit/
+speckit-*.json

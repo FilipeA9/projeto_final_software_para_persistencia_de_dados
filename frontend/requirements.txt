@@ -1,0 +1,12 @@
+# Frontend Framework
+streamlit==1.28.2
+
+# HTTP Client
+requests==2.31.0
+
+# Data Handling
+pandas==2.1.4
+
+# Development
+pytest==7.4.3
+black==23.12.0

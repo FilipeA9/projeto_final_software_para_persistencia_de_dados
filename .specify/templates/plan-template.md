@@ -31,7 +31,13 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] **Simplicity First**: Design uses simplest approach; any complexity is justified
+- [ ] **Clean Code**: Naming conventions clear, functions <50 lines, type annotations used
+- [ ] **Modular Architecture**: Clear separation of concerns (models/services/repositories/controllers)
+- [ ] **Database Optimization**: Appropriate DB choice (SQL for structured, NoSQL for flexible), indexes defined
+- [ ] **Hybrid Storage**: Files stored on disk (not DB), proper path metadata, validation rules defined
+- [ ] **Data Integrity**: Transactions planned, validation layers identified, backup strategy defined
+- [ ] **Testing Strategy**: Unit/integration/contract tests planned for critical paths
 
 ## Project Structure
 

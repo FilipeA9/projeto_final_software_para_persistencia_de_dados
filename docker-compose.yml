@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  # PostgreSQL - Primary relational database
+  postgres:
+    image: postgres:15-alpine
+    container_name: turistando-postgres
+    environment:
+      POSTGRES_USER: turistando
+      POSTGRES_PASSWORD: turistando123
+      POSTGRES_DB: turistando_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts/init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U turistando"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - turistando-network
+
+  # MongoDB - Flexible document storage
+  mongodb:
+    image: mongo:7
+    container_name: turistando-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: turistando
+      MONGO_INITDB_ROOT_PASSWORD: turistando123
+      MONGO_INITDB_DATABASE: turistando_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./backend/scripts/init-mongodb.js:/docker-entrypoint-initdb.d/init.js
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - turistando-network
+
+  # Redis - Cache layer
+  redis:
+    image: redis:7-alpine
+    container_name: turistando-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+    networks:
+      - turistando-network
+
+  # Backend API (optional - for containerized deployment)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: turistando-backend
+    environment:
+      DATABASE_URL: postgresql://turistando:turistando123@postgres:5432/turistando_db
+      MONGODB_URL: mongodb://turistando:turistando123@mongodb:27017/turistando_db
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - turistando-network
+    profiles:
+      - full  # Run only with --profile full
+
+  # Frontend UI (optional - for containerized deployment)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: turistando-frontend
+    environment:
+      BACKEND_URL: http://backend:8000
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+    networks:
+      - turistando-network
+    profiles:
+      - full  # Run only with --profile full
+
+volumes:
+  postgres_data:
+    driver: local
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  turistando-network:
+    driver: bridge
